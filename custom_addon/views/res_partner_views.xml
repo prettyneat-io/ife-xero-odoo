@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_inherit_xero" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.xero</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_sync_to_xero" type="object" class="oe_stat_button" icon="fa-refresh" string="Sync to Xero"/>
+            </xpath>
+            <notebook position="inside">
+                <page string="Xero" name="xero_tab">
+                    <group>
+                        <field name="xero_contact_id"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>

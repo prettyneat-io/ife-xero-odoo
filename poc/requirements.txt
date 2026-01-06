@@ -1,0 +1,6 @@
+xero-python
+flask
+python-dotenv
+requests
+pyopenssl
+requests-oauthlib
