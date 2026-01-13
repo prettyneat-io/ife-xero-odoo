@@ -4,7 +4,7 @@ This script demonstrates basic integration with Xero:
 1. Authenticates using OAuth2.
 2. Creates a contact marked as a supplier.
 3. Creates a bill (ACCPAY invoice) for that contact.
-4. Attaches a PDF document to the bill.
+4. Attaches multiple files to the bill from the test_files directory.
 
 ## Setup
 
@@ -36,11 +36,14 @@ This script demonstrates basic integration with Xero:
 3. Open `https://localhost:5000` in your browser. (You may need to bypass the browser security warning for the self-signed certificate).
 4. Authorize the app with your Xero organization.
 5. Once authorized, the script will automatically continue in the terminal to:
-   - Create the contact "Demo Supplier Ltd".
+   - Create a unique demo contact marked as a supplier.
    - Create a Draft bill.
-   - Attach `demo-bill.pdf`.
+   - Attach all files from the `test_files/` directory to the bill.
 
 ## Files
 - `poc_xero.py`: The main PoC script.
 - `requirements.txt`: Python dependencies.
-- `demo-bill.pdf`: Sample attachment.
+- `test_files/`: Directory containing sample attachments for testing multiple file uploads.
+  - `demo-bill.pdf`: Sample PDF attachment.
+  - `demo-bill-2.txt`: Sample text attachment.
+  - `demo-bill-3.txt`: Sample text attachment.
