@@ -176,22 +176,34 @@ def main():
     invoice_id = created_invoices.invoices[0].invoice_id
     print(f"Bill created: {invoice_id}")
 
-    # 3. Add Attachment
-    print("Uploading Attachment...")
-    attachment_path = "demo-bill.pdf"
-    if os.path.exists(attachment_path):
-        with open(attachment_path, "rb") as f:
-            file_data = f.read()
-            filename = os.path.basename(attachment_path)
-            accounting_api.create_invoice_attachment_by_file_name(
-                xero_tenant_id,
-                invoice_id,
-                filename,
-                file_data
-            )
-        print("Attachment uploaded successfully.")
+    # 3. Add Multiple Attachments
+    print("Uploading Attachments...")
+    test_files_dir = "test_files"
+
+    if os.path.exists(test_files_dir) and os.path.isdir(test_files_dir):
+        attachment_files = [f for f in os.listdir(test_files_dir) if os.path.isfile(os.path.join(test_files_dir, f))]
+
+        if not attachment_files:
+            print(f"Warning: No files found in {test_files_dir} directory.")
+        else:
+            print(f"Found {len(attachment_files)} file(s) to upload: {', '.join(attachment_files)}")
+
+            for filename in attachment_files:
+                attachment_path = os.path.join(test_files_dir, filename)
+                try:
+                    with open(attachment_path, "rb") as f:
+                        file_data = f.read()
+                        accounting_api.create_invoice_attachment_by_file_name(
+                            xero_tenant_id,
+                            invoice_id,
+                            filename,
+                            file_data
+                        )
+                    print(f"  ✓ Uploaded: {filename}")
+                except Exception as e:
+                    print(f"  ✗ Failed to upload {filename}: {str(e)}")
     else:
-        print(f"Warning: Attachment {attachment_path} not found.")
+        print(f"Warning: {test_files_dir} directory not found.")
 
 if __name__ == "__main__":
     main()

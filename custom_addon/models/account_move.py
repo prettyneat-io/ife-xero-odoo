@@ -62,6 +62,7 @@ class AccountMove(models.Model):
             result = response.json()
             if result.get('Invoices'):
                 self.xero_invoice_id = result['Invoices'][0].get('InvoiceID')
+                self.message_post(body=_("Bill successfully pushed to Xero. Invoice ID: %s") % self.xero_invoice_id)
                 self._upload_attachments_to_xero()
         else:
             raise UserError(_("Failed to push Bill to Xero: %s") % response.text)
@@ -82,19 +83,20 @@ class AccountMove(models.Model):
         access_token = self.env['xero.token'].get_token()
         tenant_id = self.env['ir.config_parameter'].sudo().get_param('xero.tenant_id')
         
-        # Upload the first attachment for POC
-        attachment = attachments[0]
-        url = f"https://api.xero.com/api.xro/2.0/Invoices/{self.xero_invoice_id}/Attachments/{attachment.name}"
-        
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Xero-tenant-id": tenant_id,
-            "Content-Type": attachment.mimetype or "application/octet-stream"
-        }
-        
-        file_data = base64.b64decode(attachment.datas)
-        response = requests.post(url, headers=headers, data=file_data)
-        
-        if response.status_code not in (200, 201):
-            # Log error but don't fail the whole process for attachment
-            pass
+        for attachment in attachments:
+            url = f"https://api.xero.com/api.xro/2.0/Invoices/{self.xero_invoice_id}/Attachments/{attachment.name}"
+            
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Xero-tenant-id": tenant_id,
+                "Content-Type": attachment.mimetype or "application/octet-stream"
+            }
+            
+            file_data = base64.b64decode(attachment.datas)
+            response = requests.post(url, headers=headers, data=file_data)
+            
+            if response.status_code in (200, 201):
+                self.message_post(body=_("Attachment '%s' uploaded to Xero.") % attachment.name)
+            else:
+                # Log error but don't fail the whole process for attachment
+                self.message_post(body=_("Failed to upload attachment '%s' to Xero.") % attachment.name)
